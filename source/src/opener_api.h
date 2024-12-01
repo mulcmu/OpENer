@@ -19,6 +19,13 @@
 #define TcpIpInterface const char
 #endif		/** other targets */
 
+#if defined(STM32) && defined(CORE_CM7)	/** Cortex M7 required cache flush  */
+#define OsFlushSocketMessageBuffer(address,size) \
+    SCB_CleanDCache_by_Addr(address,size)
+#else		/** other targets -> nothing special required */
+#define OsFlushSocketMessageBuffer(address,size) 
+#endif		/** Cortex M7 OsFlushSocketMessageBuffer */
+
 /**  @defgroup CIP_API OpENer User interface
  * @brief This is the public interface of the OpENer. It provides all function
  * needed to implement an EtherNet/IP enabled slave-device.

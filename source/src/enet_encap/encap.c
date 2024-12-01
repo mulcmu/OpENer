@@ -688,6 +688,7 @@ void ManageEncapsulationMessages(const MilliSeconds elapsed_time) {
       g_delayed_encapsulation_messages[i].time_out -= elapsed_time;
       if(0 >= g_delayed_encapsulation_messages[i].time_out) {
         /* If delay is reached or passed, send the UDP message */
+        OsFlushSocketMessageBuffer((uint32_t *)g_delayed_encapsulation_messages[i].outgoing_message.message_buffer, sizeof(DelayedEncapsulationMessage));
         sendto(g_delayed_encapsulation_messages[i].socket, (char*) g_delayed_encapsulation_messages[i].outgoing_message.message_buffer,
           g_delayed_encapsulation_messages[i].outgoing_message.used_message_length, 0, (struct sockaddr*) &(g_delayed_encapsulation_messages[i].receiver),
           sizeof(struct sockaddr));

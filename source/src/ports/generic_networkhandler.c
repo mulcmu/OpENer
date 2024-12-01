@@ -591,7 +591,7 @@ void CheckAndHandleUdpGlobalBroadcastSocket(void) {
 
     if(need_to_send > 0) {
       OPENER_TRACE_INFO("UDP broadcast reply sent:\n");
-
+      OsFlushSocketMessageBuffer((uint32_t *)outgoing_message.message_buffer, sizeof(ENIPMessage));
       /* if the active socket matches a registered UDP callback, handle a UDP packet */
       if(sendto( g_network_status.udp_unicast_listener,  /* sending from unicast port, due to strange behavior of the broadcast port */
                  (char *) outgoing_message.message_buffer,
@@ -661,6 +661,7 @@ void CheckAndHandleUdpUnicastSocket(void) {
       OPENER_TRACE_INFO("UDP unicast reply sent:\n");
 
       /* if the active socket matches a registered UDP callback, handle a UDP packet */
+      OsFlushSocketMessageBuffer((uint32_t *)outgoing_message.message_buffer, sizeof(ENIPMessage));
       if(sendto( g_network_status.udp_unicast_listener,
                  (char *) outgoing_message.message_buffer,
                  outgoing_message.used_message_length, 0,
@@ -691,6 +692,7 @@ EipStatus SendUdpData(const struct sockaddr_in *const address,
     ntohs(address->sin_port) );
 #endif
 
+  OsFlushSocketMessageBuffer((uint32_t *)outgoing_message->message_buffer, sizeof(ENIPMessage));
   int sent_length = sendto( g_network_status.udp_io_messaging,
                             (char *)outgoing_message->message_buffer,
                             outgoing_message->used_message_length, 0,
@@ -883,7 +885,7 @@ EipStatus HandleDataOnTcpSocket(int socket) {
       OPENER_TRACE_INFO("TCP reply: send %" PRIuSZT " bytes on %d\n",
                         outgoing_message.used_message_length,
                         socket);
-
+      OsFlushSocketMessageBuffer((uint32_t *)outgoing_message.message_buffer, sizeof(ENIPMessage));
       data_sent = send(socket,
                        (char *) outgoing_message.message_buffer,
                        outgoing_message.used_message_length,
